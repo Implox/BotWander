@@ -23,12 +23,14 @@ type [<Struct>] Vector (x : float, y : float) =
     /// Returns the result of subtracting one vector by another.
     static member (-) (a : Vector, b : Vector) = a + (b * - 1.0)
 
+    static member Zero = Vector (0.0, 0.0)
+
     override this.ToString () =  "(" + string this.X + ", " + string this.Y + ")"
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Vector =
     /// The zero vector
-    let zero = Vector (0.0, 0.0)
+    let zero = Vector.Zero
 
     /// Returns the distance between two vectors
     let dist (a : Vector) (b : Vector) = (a - b).Length

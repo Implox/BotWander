@@ -10,6 +10,8 @@ type CPoint (pos : Point, dir : Vector) =
     let mutable pos = pos
     let mutable dir = dir
 
+    new (pos : Point) = CPoint (pos, Vector.zero)
+
     /// Gets or sets the position of this control point.
     member this.Pos
         with get () = pos
@@ -68,6 +70,26 @@ module Segment =
             3.0 * (t ** 2.0) * (p3 - p2)
         f
 
+    /// Approximates the length of a given segment as a trapezoidal Riemann sum.
+    let length (seg : T) =
+        let c = parameterizeDerivative seg 
+        let intervals = 1000.0
+        let step = 1.0 / intervals
+        let points = [0.0 .. step .. 1.0]
+        let upper = 
+            [for i = 1 to points.Length - 1 do
+                let v = (c points.[i]).Length
+                yield v * (points.[i] - points.[i-1])]
+            |> List.sum
+
+        let lower =
+            [for i = 1 to points.Length - 1 do
+                let v = (c points.[i-1]).Length
+                yield v * (points.[i] - points.[i-1])]
+            |> List.sum
+
+        (upper + lower) / 2.0
+
 /// Represents a continuous, 2D, piece-wise spline curve consisting of two or
 /// more spline control points.
 type Curve (first : CPoint, second : CPoint, ?tail : CPoint list) =
@@ -88,16 +110,24 @@ type Curve (first : CPoint, second : CPoint, ?tail : CPoint list) =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Curve =
-    /// Parameterizes each segment in a curve by a given function.
-    let private parameterizeBy (f : Segment.T -> (float -> Vector)) (curve : Curve) =
+    /// Applies a given function to each segment of a curve.
+    let private apply f (curve : Curve) =
         curve.Points 
         |> Seq.pairwise
         |> Seq.map (fun (p1, p2) -> Segment.create p1 p2)
         |> Seq.map f
         |> List.ofSeq
 
+    /// Parameterizes each segment of a curve.
     let parameterize (curve : Curve) = 
-        curve |> parameterizeBy Segment.parameterize
+        curve |> apply Segment.parameterize
 
+    /// Parameterizes each segment of a cuve by it's derivative.
     let parameterizeDerivative (curve : Curve) = 
-        curve |> parameterizeBy Segment.parameterizeDerivative
+        curve |> apply Segment.parameterizeDerivative
+
+    /// Calculates the total length of a curve
+    let length (curve : Curve) =
+        curve 
+        |> apply Segment.length
+        |> List.sum
