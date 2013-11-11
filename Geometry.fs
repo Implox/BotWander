@@ -61,7 +61,7 @@ type [<Struct>] Transform (offset : Point, x : Vector, y : Vector) =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Transform =
     /// The identity transform.
-    let identity = Transform (Point (0.0, 0.0), Vector (1.0, 0.0), Vector (0.0, 1.0))
+    let identity = Transform (Point.Zero, Vector (1.0, 0.0), Vector (0.0, 1.0))
 
     /// Applies a given transform to a given point.
     let apply (p : Point) (t : Transform) = t.Offset + (t.X * p.X) + (t.Y * p.Y)
@@ -75,15 +75,15 @@ module Transform =
 
     /// Creates a rotation transform for a certain angle in radians.
     let rotate (angle : float) = 
-        Transform (Point (0.0, 0.0), Vector (cos angle, sin angle), Vector (-(sin angle), cos angle))
+        Transform (Point.Zero, Vector (cos angle, sin angle), Vector (-(sin angle), cos angle))
 
     /// Creates a scale transform with the given scale factor.
     let scale (amount : float) =
-        Transform (Point (0.0, 0.0), Vector (amount, 0.0), Vector (0.0, amount))
+        Transform (Point.Zero, Vector (amount, 0.0), Vector (0.0, amount))
 
     /// Creates a scale transform with independant scale factors for each axis.
     let scaleIndependant (horizontal : float) (vertical : float) =
-        Transform (Point (0.0, 0.0), Vector (horizontal, 0.0), Vector (0.0, vertical))
+        Transform (Point.Zero, Vector (horizontal, 0.0), Vector (0.0, vertical))
 
     /// Creates a scale transform with a given offset
     let translate (offset : Point) =

@@ -111,6 +111,7 @@ type Curve (first : CPoint, second : CPoint, ?tail : CPoint list) =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Curve =
     /// Applies a given function to each segment of a curve.
+    /// Returns a list containing the results of the function for each segment.
     let private apply f (curve : Curve) =
         curve.Points 
         |> Seq.pairwise
@@ -126,7 +127,7 @@ module Curve =
     let parameterizeDerivative (curve : Curve) = 
         curve |> apply Segment.parameterizeDerivative
 
-    /// Calculates the total length of a curve
+    /// Approximates the total length of the curve.
     let length (curve : Curve) =
         curve 
         |> apply Segment.length
