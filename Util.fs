@@ -15,3 +15,5 @@ module List =
     let insert (lst : _ list) (index : int) value =
         let init, tail = lst |> splitAt index
         init @ (value :: tail)
+
+type Time = double

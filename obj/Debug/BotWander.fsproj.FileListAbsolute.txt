@@ -7,3 +7,12 @@ C:\Users\Alex\documents\visual studio 2012\Projects\BotWander\BotWander\bin\Debu
 C:\Users\Alex\documents\visual studio 2012\Projects\BotWander\BotWander\bin\Debug\FSharp.Core.xml
 C:\Users\Alex\documents\visual studio 2012\Projects\BotWander\BotWander\obj\Debug\BotWander.exe
 C:\Users\Alex\documents\visual studio 2012\Projects\BotWander\BotWander\obj\Debug\BotWander.pdb
+C:\Users\Alex\Documents\GitHub\BotWander\bin\Debug\BotWander.exe.config
+C:\Users\Alex\Documents\GitHub\BotWander\bin\Debug\BotWander.XML
+C:\Users\Alex\Documents\GitHub\BotWander\bin\Debug\BotWander.exe
+C:\Users\Alex\Documents\GitHub\BotWander\bin\Debug\BotWander.pdb
+C:\Users\Alex\Documents\GitHub\BotWander\bin\Debug\FSharp.Core.dll
+C:\Users\Alex\Documents\GitHub\BotWander\bin\Debug\FSharp.Core.xml
+C:\Users\Alex\Documents\GitHub\BotWander\obj\Debug\BotWander.fsprojResolveAssemblyReference.cache
+C:\Users\Alex\Documents\GitHub\BotWander\obj\Debug\BotWander.exe
+C:\Users\Alex\Documents\GitHub\BotWander\obj\Debug\BotWander.pdb

@@ -4,14 +4,14 @@ open Util
 open Geometry
 open Spline
 
-// Some testing for error in the Segment.length function
-let pStart = CPoint (Point.Zero)
-let pEnd = CPoint (Point (10.0, 10.0))
+let p0 = CPoint (Point2 (1.0, 0.0), Vector2 (0.0, 1.0) |> Vector2.norm)
+let p1 = CPoint (Point2 (0.0, 1.0), Vector2 (-1.0, 0.0) |> Vector2.norm)
+let p2 = CPoint (Point2 (-1.0, 0.0), Vector2 (0.0, -1.0) |> Vector2.norm)
+let p3 = CPoint (Point2 (0.0, -1.0), Vector2 (1.0, 0.0) |> Vector2.norm)
 
-pStart.Dir <- (pEnd.Pos - pStart.Pos)
-pEnd.Dir <- pStart.Dir
+let points = [p2; p3; p0]
 
-let seg = Segment.create pStart pEnd
+let curve = Curve (p0, p1, points)
 
-(Segment.length seg) - sqrt (10.0 ** 2.0 * 2.0) |> printfn "%A"
+curve |> Curve.length |> printfn "%A"
 System.Console.ReadKey () |> ignore

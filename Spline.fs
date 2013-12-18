@@ -6,11 +6,11 @@ open Geometry
 open System.Collections.Generic
 
 /// Represents a mutable control point on a spline curve with a position and a derivative.
-type CPoint (pos : Point, dir : Vector) =
+type CPoint (pos : Point2, dir : Vector2) =
     let mutable pos = pos
     let mutable dir = dir
 
-    new (pos : Point) = CPoint (pos, Vector.zero)
+    new (pos : Point2) = CPoint (pos, Vector2.zero)
 
     /// Gets or sets the position of this control point.
     member this.Pos
@@ -123,7 +123,7 @@ module Curve =
     let parameterize (curve : Curve) = 
         curve |> apply Segment.parameterize
 
-    /// Parameterizes each segment of a cuve by it's derivative.
+    /// Parameterizes each segment of a cuve by its derivative.
     let parameterizeDerivative (curve : Curve) = 
         curve |> apply Segment.parameterizeDerivative
 
