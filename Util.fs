@@ -16,4 +16,5 @@ module List =
         let init, tail = lst |> splitAt index
         init @ (value :: tail)
 
+/// Represents a time value in seconds.
 type Time = double

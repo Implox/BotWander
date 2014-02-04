@@ -133,70 +133,10 @@ module Transform =
         if aspectRatio < 1.0 then compose (scaleIndependant aspectRatio 1.0) t
         else compose (scaleIndependant 1.0 (1.0 / aspectRatio)) t
 
-/// Represents a convex quadrilateral in 2D space with a mutable position and angle of rotation.
-type [<AbstractClass>] Quad () =
-
-    /// The barycenter of this quad. Serves as the position and center of rotation.
-    abstract member Center : Point2 with get, set
-
-    /// Returns a list of the (absolute) locations of a quad's corners in the order:
-    /// Top-left, top-right, bottom-left, bottom-right.
-    abstract member Corners : Point2 list with get
-
-    /// Gets the horizontal and vertical projection axis vectors of this quad for use in the separating axis test.
-    /// Some quads like rhomboids have only two unique axes, so a set is used to ignore duplicate vectors.
-    abstract member Axes : Vector2 Set with get
-    default this.Axes
-        with get () =
-            let corner x = this.Corners.[x]
-            Set.ofList [ corner 2 - corner 0;
-                         corner 3 - corner 1;
-                         corner 1 - corner 0;
-                         corner 3 - corner 2 ]
-
-    /// Gets the half-height of this quad (ie. the distance from the top or bottom of the quad from its center).
-    abstract member Height : float
-
-    /// The angle of rotation for this quad.
-    abstract member Theta : float with get, set
-
-    /// Gets the half-width of this quad (ie. the distance from the left or right of the quad from its center).
-    abstract member Width : float
-
-
 /// Represents a non-axis-aligned rectangle in 2D space
 type Rectangle (center : Point2, width : float, height : float, theta : float) =
-    inherit Quad ()
     let mutable center = center
     let mutable theta = theta
-
-    /// Gets the (absolute) location of the top-left corner of this rectangle.
-    let topLeft () =
-        let rotationTransform = Transform.rotate (theta)
-        let offset = Point2 (-1.0 * width, height)
-        let offsetTransform = Transform.translate (offset)
-        (Transform.compose offsetTransform rotationTransform) |> Transform.apply center
-    
-    /// Gets the (absolute) location of the top-right corner of this rectangle.
-    let topRight () =
-        let rotationTransform = Transform.rotate (theta)
-        let offset = Point2 (width, height)
-        let offsetTransform = Transform.translate (offset)
-        (Transform.compose offsetTransform rotationTransform) |> Transform.apply center
-
-    /// Gets the (absolute) location of the bottom-left corner of this rectangle.
-    let bottomLeft () =
-        let rotationTransform = Transform.rotate (theta)
-        let offset = -1.0 * Point2 (width, height)
-        let offsetTransform = Transform.translate (offset)
-        (Transform.compose offsetTransform rotationTransform) |> Transform.apply center
-
-    /// Gets the (absolute) location of the bottom-right corner of this rectangle.
-    let bottomRight () =
-        let rotationTransform = Transform.rotate (theta)
-        let offset = Point2 (width, -1.0 * height)
-        let offsetTransform = Transform.translate (offset)
-        (Transform.compose offsetTransform rotationTransform) |> Transform.apply center 
 
     // Constructs a rectangle using the positions of its corners.
     new (topLeft : Point2, topRight : Point2, bottomLeft : Point2, bottomRight : Point2) =
@@ -210,31 +150,61 @@ type Rectangle (center : Point2, width : float, height : float, theta : float) =
             (Transform.translate (offset)) |> Transform.apply bottomLeft
         Rectangle (center, width, height, theta)
 
-    /// The barycenter of this rectangle.
-    override this.Center 
+    /// The full width of this rectangle
+    member this.Width = width
+    
+    /// The full height of this rectangle
+    member this.Height = height
+
+    /// The center point of this rectangle
+    member this.Center 
         with get () = center
         and set value = center <- value
 
-    /// Returns a list of the (absolute) locations of a rectangle's corners in the order:
-    /// Top-left, top-right, bottom-left, bottom-right.
-    override this.Corners 
-        with get () = [topLeft (); topRight (); bottomLeft (); bottomRight ()]
-    
-    /// The half height of this rectangle.
-    override this.Height = height
-
     /// The angle by which this rectangle is rotated about its center in radians.
-    override this.Theta 
+    member this.Theta 
         with get () = theta
         and set value = theta <- value
-
-    /// The half width of this rectangle.
-    override this.Width = width
             
-(*[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module Rectangle =
 
-    let checkCollision (a : Rectangle) (b : Rectangle) =
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module Rectangle =
+    /// Gets the (absolute) location of the top-left corner of a rectangle.
+    let inline topLeft (r : Rectangle) =
+        let rotationTransform = Transform.rotate (r.Theta)
+        let offset = Point2 (-0.5 * r.Width, 0.5 * r.Height)
+        let offsetTransform = Transform.translate (offset)
+        (Transform.compose offsetTransform rotationTransform) |> Transform.apply r.Center
+    
+    /// Gets the (absolute) location of the top-right corner of a rectangle.
+    let inline topRight (r : Rectangle) =
+        let rotationTransform = Transform.rotate (r.Theta)
+        let offset = 0.5 * Point2 (r.Width, r.Height)
+        let offsetTransform = Transform.translate (offset)
+        (Transform.compose offsetTransform rotationTransform) |> Transform.apply r.Center
+
+    /// Gets the (absolute) location of the bottom-left corner of a rectangle.
+    let inline bottomLeft (r : Rectangle) =
+        let rotationTransform = Transform.rotate (r.Theta)
+        let offset = -0.5 * Point2 (r.Width, r.Height)
+        let offsetTransform = Transform.translate (offset)
+        (Transform.compose offsetTransform rotationTransform) |> Transform.apply r.Center
+
+    /// Gets the (absolute) location of the bottom-right corner of a rectangle.
+    let inline bottomRight (r : Rectangle) =
+        let rotationTransform = Transform.rotate (r.Theta)
+        let offset = Point2 (0.5 * r.Width, -0.5 * r.Height)
+        let offsetTransform = Transform.translate (offset)
+        (Transform.compose offsetTransform rotationTransform) |> Transform.apply r.Center
+
+    /// Returns a list of the (absolute) locations of a rectangle's corners in the order:
+    /// Top-left, top-right, bottom-left, bottom-right.
+    let corners (r : Rectangle) =
+        [(topLeft r);    (topRight r);
+         (bottomLeft r); (bottomRight r)]
+
+    /// Checks if two rectangles overlap with each other.
+    let overlaps (a : Rectangle) (b : Rectangle) =
         /// Gets the projection axes (vectors perpendicular to each sides of the polygon) of a rectangle.
         let projectionAxes (r : Rectangle) = 
             // Rectangles have parallel sides so only two sides are needed from each for successful projection.
@@ -270,4 +240,5 @@ module Rectangle =
             (basisProjection, otherProjection)
             ||> List.forall2 (fun (minA, maxA) (minB, maxB) -> maxA < minB || minB > maxB)
             |> not
-        (checkOverlap a b) && (checkOverlap b a) *)
+
+        (checkOverlap a b) && (checkOverlap b a)

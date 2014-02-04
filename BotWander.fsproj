@@ -48,9 +48,9 @@
     <Compile Include="Util.fs" />
     <Compile Include="Geometry.fs" />
     <Compile Include="Spline.fs" />
-    <Compile Include="Program.fs" />
-    <None Include="App.config" />
+    <Compile Include="Bounding.fs" />
     <Compile Include="Anchor.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <PropertyGroup>
     <MinimumVisualStudioVersion Condition="'$(MinimumVisualStudioVersion)' == ''">11</MinimumVisualStudioVersion>

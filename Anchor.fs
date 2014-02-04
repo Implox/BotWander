@@ -29,7 +29,7 @@ type TemporalAnchor (posFunc : Time -> Point2, timeFunc : unit -> Time) =
             let epsilon = 0.0001
             (posFunc (timeFunc () + epsilon) - posFunc (timeFunc ())) * (1.0 / epsilon)
 
-/// An anchor which uses the "get" functions for the position and velocity of another entity in the world.
+/// An anchor which uses the "get" functions for the position and velocity of a "source" entity in the world.
 type SourcedAnchor (posFunc : unit -> Point2, velFunc : unit -> Vector2) =
     inherit Anchor ()
 
@@ -47,7 +47,7 @@ module Anchor =
     /// Creates a temporal anchor using the given position and time functions.
     let temporal pFunc tFunc = TemporalAnchor (pFunc, tFunc)
 
-    /// Creates a sourced anchor with the given.
+    /// Creates a sourced anchor with the given get functions for position and velocity.
     let sourced pFunc vFunc = SourcedAnchor (pFunc, vFunc)
 
     /// Composes two anchors.
